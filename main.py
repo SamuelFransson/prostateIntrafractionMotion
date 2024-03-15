@@ -61,16 +61,25 @@ rootData = 'P:/TERAPI/FYSIKER/David_Tilly/DosePrediction/PatientData'
 patients = os.listdir(rootData)
 cropMargin = [-30,-30,-30,50,50,50] #A bit strange giving margins like this (first three are starting indices, second sizes (in mm?) but don't care since close to 1mm isotropic resolution
 #rootOutput = 'C:/Users/frs039/testIntrafractionProstate'
-rootOutput = 'E:/prostateIntrafractionMotion'
+rootOutput = 'E:/prostateIntrafractionMotion/retries'
 
 if os.path.isfile(rootOutput+'/log.txt'):
     os.remove(rootOutput+'/log.txt')
 
+#If retries on specific patients/fractions, specify here, otherwise uncomment
+patients = [[11,3],[11,6],[17,1],[17,2],[17,4],[17,6],[18,2],[19,2],[19,3],[19,4],[22,5],[23,4],[24,5],[24,6],[24,7],[24,8],[32,4],[32,6],[34,7]]
+
 for patient in patients:
+   fr = []
+   if type(patient) == list:
+       fr = str(patient[1])
+       patient = str(patient[0])
    rootPatient = os.path.join(rootData,patient)
    rootOut = os.path.join(rootOutput,patient)
    #Planning images are named 'fx{n]', verification 'VER{n}' and post images 'POST{n}'
    planningImages = glob(rootPatient+'/fx*')
+   if fr:
+       planningImages = glob(rootPatient+'/fx*'+fr+'*')
    for pIm in planningImages:
        try:
           fractionNr = pIm[-1] #Assuming last character is fraction number
@@ -125,6 +134,13 @@ for patient in patients:
             parameter_object = itk.ParameterObject.New()
             default_bspline_parameter_map = parameter_object.GetDefaultParameterMap('bspline', 4)
             default_bspline_parameter_map['FinalBSplineInterpolationOrder'] = ['1']
+            default_bspline_parameter_map['MaximumNumberOfIterations'] = ['500']
+       #     default_bspline_parameter_map['GridSpacingSchedule'] = ['16','8','4','2','1']
+      #      default_bspline_parameter_map['NumberOfResolutions'] = ['5']
+     #       default_bspline_parameter_map['FinalGridSpacingInPhysicalUnits'] = ['6']
+      #      default_bspline_parameter_map['Metric1Weight'] = ['0.001']
+     #       default_bspline_parameter_map['FixedImagePyramid'] = ['FixedRecursiveImagePyramid']
+    #        default_bspline_parameter_map['MovingImagePyramid'] = ['MovingRecursiveImagePyramid']
             parameter_object.AddParameterMap(default_bspline_parameter_map)
             rootSave = os.path.join(rootOut, fractionNr, keyPath)
             if not os.path.isdir(rootSave): os.makedirs(rootSave)

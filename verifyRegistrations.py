@@ -15,10 +15,10 @@ def ReadMasks(root) -> object:
         masks += sitk.GetArrayFromImage(mask)
     return masks
 
-root = 'E:/prostateIntrafractionMotion'
+root = 'E:/prostateIntrafractionMotion/retries'
 
-pat = '14'
-fr = '4'
+pat = '11'
+fr = '3'
 
 patients = os.listdir(root)
 imNames = ['PLAN', 'VER', 'POST']
