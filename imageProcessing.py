@@ -1,5 +1,5 @@
 import numpy as np
-import deepcopy
+from copy import deepcopy
 
 def z_normalize(image, percentage_range = [0,100]):
     'Z-normalization of image'
