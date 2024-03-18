@@ -13,7 +13,7 @@ def SetMetadata(fromIm,toIm):
 
     return toIm
 
-pathModels = 'C:/Users/frs039/OneDrive - Region Uppsala/Paper IV/SegmentationModels'
+pathModels = 'C:/Users/frs039/OneDrive - Region Uppsala/Paper IV/SegmentationModels/full_models'
 pathImages = 'E:/prostateIntrafractionMotion'
 
 modelNames = os.listdir(pathModels)
@@ -46,15 +46,19 @@ for pat in patients[0]:
                 segmentation += tmp[0]
             segmentation = segmentation / len(models)
             segmentation = max_along_axis(segmentation)
+            ctv = segmentation[0,...,1]
             bladder = segmentation[0,...,2]
             rectum = segmentation[0,...,3]
+            ctvSitk = sitk.GetImageFromArray(ctv)
             bladderSitk = sitk.GetImageFromArray(bladder)
             rectumSitk = sitk.GetImageFromArray(rectum)
+            ctvSitk = SetMetadata(imArray,ctvSitk)
             bladderSitk = SetMetadata(imArray, bladderSitk)
             rectumSitk = SetMetadata(imArray, rectumSitk)
             #Save
-            sitk.WriteImage(bladderSitk,frRoot+'/bladder_DL.nii.gz')
-            sitk.WriteImage(rectumSitk,frRoot+'/rectum_DL.nii.gz')
+            sitk.WriteImage(ctvSitk,os.path.join(frRoot,imPath,'mask_prostate_DL.nii.gz'))
+            sitk.WriteImage(bladderSitk,os.path.join(frRoot,imPath,'mask_bladder_DL.nii.gz'))
+            sitk.WriteImage(rectumSitk,os.path.join(frRoot,imPath,'mask_rectum_DL.nii.gz'))
 
             
             
